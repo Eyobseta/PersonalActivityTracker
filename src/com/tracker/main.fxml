@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="15" alignment="TOP_CENTER" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.tracker.controller.MainController" stylesheets="@style.css">
+<VBox spacing="15" alignment="TOP_CENTER" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.tracker.controller.MainController">
     <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
 
     <Label text="Personal Activity Tracker" styleClass="title-label"/>

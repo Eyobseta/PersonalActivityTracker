@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="15" alignment="TOP_CENTER" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.tracker.controller.MainController">
+    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+    <Label text="Personal Activity Tracker" styleClass="title-label"/>
+
+    <GridPane hgap="10" vgap="10" styleClass="input-panel">
+        <Label text="Activity:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="activityNameField" promptText="e.g., Studying" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Duration (min):" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="durationField" promptText="30" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Date:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="datePicker" promptText="Select date" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+    </GridPane>
+
+    <HBox spacing="15" alignment="CENTER">
+        <Button text="➕ Add" onAction="#handleAdd" styleClass="action-btn"/>
+        <Button text="💾 Save" onAction="#handleSave" styleClass="action-btn"/>
+        <Button text="📂 Load" onAction="#handleLoad" styleClass="action-btn"/>
+        <Button text="📊 Analyze" onAction="#handleAnalyze" styleClass="action-btn"/>
+    </HBox>
+
+    <TableView fx:id="tableView" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colName" text="Activity Name" prefWidth="200"/>
+            <TableColumn fx:id="colDuration" text="Duration (min)" prefWidth="120"/>
+            <TableColumn fx:id="colDate" text="Date" prefWidth="150"/>
+        </columns>
+    </TableView>
+</VBox>
