@@ -4,34 +4,43 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="15" alignment="TOP_CENTER" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.tracker.controller.MainController">
-    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+<VBox spacing="15" alignment="TOP_CENTER" styleClass="main-container" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.tracker.controller.MainController">
+    <padding><Insets top="25" right="25" bottom="25" left="25"/></padding>
 
-    <Label text="Personal Activity Tracker" styleClass="title-label"/>
+    <Label text="✨ Personal Activity Tracker" styleClass="title-label"/>
 
-    <GridPane hgap="10" vgap="10" styleClass="input-panel">
-        <Label text="Activity:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-        <TextField fx:id="activityNameField" promptText="e.g., Studying" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+    <VBox styleClass="card" spacing="15">
+        <GridPane styleClass="input-grid">
+            <Label text="🏷️ Activity:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <TextField fx:id="activityNameField" promptText="e.g., Coding, Reading" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-        <Label text="Duration (min):" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <TextField fx:id="durationField" promptText="30" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label text="⏱️ Duration (min):" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <TextField fx:id="durationField" promptText="30" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-        <Label text="Date:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-        <DatePicker fx:id="datePicker" promptText="Select date" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-    </GridPane>
+            <Label text="📅 Date:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <DatePicker fx:id="datePicker" promptText="Select date" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            <VBox.margin><Insets/></VBox.margin>
+        </GridPane>
 
-    <HBox spacing="15" alignment="CENTER">
-        <Button text="➕ Add" onAction="#handleAdd" styleClass="action-btn"/>
-        <Button text="💾 Save" onAction="#handleSave" styleClass="action-btn"/>
-        <Button text="📂 Load" onAction="#handleLoad" styleClass="action-btn"/>
-        <Button text="📊 Analyze" onAction="#handleAnalyze" styleClass="action-btn"/>
-    </HBox>
+        <HBox spacing="12" alignment="CENTER">
+            <Button text="➕ Add" onAction="#handleAdd" />
+            <Button text="💾 Save" onAction="#handleSave" />
+            <Button text="📂 Load" onAction="#handleLoad" />
+            <Button text="📊 Analyze" onAction="#handleAnalyze" />
+            <Button text="🗑️ Delete" onAction="#handleDelete" styleClass="button-danger"/>
+        </HBox>
+    </VBox>
 
-    <TableView fx:id="tableView" VBox.vgrow="ALWAYS">
+    <TableView fx:id="tableView" VBox.vgrow="ALWAYS" prefHeight="300">
         <columns>
-            <TableColumn fx:id="colName" text="Activity Name" prefWidth="200"/>
-            <TableColumn fx:id="colDuration" text="Duration (min)" prefWidth="120"/>
-            <TableColumn fx:id="colDate" text="Date" prefWidth="150"/>
+            <TableColumn fx:id="colName" text="Activity Name" prefWidth="220"/>
+            <TableColumn fx:id="colDuration" text="Duration (min)" prefWidth="130"/>
+            <TableColumn fx:id="colDate" text="Date" prefWidth="160"/>
         </columns>
+        <placeholder>
+            <Label text="✨ No activities yet. Add your first activity!" style="-fx-text-fill: #666; -fx-font-style: italic;"/>
+        </placeholder>
     </TableView>
+
+    <Label fx:id="statusLabel" styleClass="status-label" text="✅ Ready" />
 </VBox>

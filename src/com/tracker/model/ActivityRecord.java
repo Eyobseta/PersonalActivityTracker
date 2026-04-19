@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class ActivityRecord {
     private String name;
-    private int duration;      // minutes
+    private int duration;
     private LocalDate date;
 
     public ActivityRecord(String name, int duration, LocalDate date) {
@@ -17,7 +17,6 @@ public class ActivityRecord {
     public int getDuration() { return duration; }
     public LocalDate getDate() { return date; }
 
-    // For CSV storage: name,duration,date (yyyy-MM-dd)
     public String toCSV() {
         return name + "," + duration + "," + date.toString();
     }

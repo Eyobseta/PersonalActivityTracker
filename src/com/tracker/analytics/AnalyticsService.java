@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 public class AnalyticsService {
 
-    // Total time per activity (minutes)
     public Map<String, Integer> totalTimePerActivity(List<ActivityRecord> records) {
         Map<String, Integer> map = new HashMap<>();
         for (ActivityRecord rec : records) {
@@ -18,7 +17,6 @@ public class AnalyticsService {
         return map;
     }
 
-    // Most frequent activity (by number of occurrences)
     public String mostFrequentActivity(List<ActivityRecord> records) {
         if (records.isEmpty()) return "No data";
         return records.stream()
@@ -29,7 +27,6 @@ public class AnalyticsService {
                 .orElse("None");
     }
 
-    // Daily summary: total minutes per day
     public Map<LocalDate, Integer> dailySummary(List<ActivityRecord> records) {
         Map<LocalDate, Integer> daily = new HashMap<>();
         for (ActivityRecord rec : records) {
@@ -38,7 +35,6 @@ public class AnalyticsService {
         return daily;
     }
 
-    // Weekly summary: group by week (Monday to Sunday)
     public Map<String, Integer> weeklySummary(List<ActivityRecord> records) {
         Map<String, Integer> weekly = new HashMap<>();
         for (ActivityRecord rec : records) {

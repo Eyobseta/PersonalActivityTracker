@@ -1,50 +1,114 @@
 .root {
-    -fx-font-family: "Segoe UI", "Arial", sans-serif;
-    -fx-background-color: #f0f4f8;
+    -fx-font-family: "Segoe UI", "Inter", "Arial", sans-serif;
+    -fx-background-color: linear-gradient(to bottom right, #e0eafc, #cfdef3);
+}
+
+/* Main container */
+.main-container {
+    -fx-background-color: transparent;
+}
+
+/* Card style for input panel */
+.card {
+    -fx-background-color: rgba(255, 255, 255, 0.92);
+    -fx-background-radius: 24px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 20, 0, 0, 8);
+    -fx-padding: 20;
 }
 
 .title-label {
-    -fx-font-size: 24px;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e2a3e;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 1);
+}
+
+.input-grid {
+    -fx-hgap: 15;
+    -fx-vgap: 12;
+    -fx-padding: 10;
+}
+
+.input-grid Label {
     -fx-font-weight: bold;
     -fx-text-fill: #2c3e50;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 1);
 }
 
-.input-panel {
-    -fx-background-color: #ffffffcc;
-    -fx-padding: 15;
-    -fx-background-radius: 12;
-    -fx-border-radius: 12;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+.text-field, .date-picker {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16px;
+    -fx-border-color: #d0dae8;
+    -fx-border-radius: 16px;
+    -fx-padding: 8 12;
+    -fx-font-size: 14px;
+    -fx-effect: innershadow(gaussian, #0000000a, 2, 0, 0, 1);
 }
 
-.action-btn {
-    -fx-background-color: #3498db;
+.text-field:focused, .date-picker:focused {
+    -fx-border-color: #4a90e2;
+    -fx-border-width: 2px;
+}
+
+.button {
+    -fx-background-color: #4a90e2;
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-padding: 8 20;
-    -fx-background-radius: 20;
+    -fx-background-radius: 30px;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 3, 0, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0, 0, 2);
+    -fx-font-size: 14px;
 }
-.action-btn:hover {
-    -fx-background-color: #5dade2;
+
+.button:hover {
+    -fx-background-color: #5fa3ee;
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.button-danger {
+    -fx-background-color: #e2684a;
+}
+.button-danger:hover {
+    -fx-background-color: #e67e5f;
 }
 
 .table-view {
     -fx-background-color: white;
-    -fx-background-radius: 10;
-    -fx-border-radius: 10;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 4);
+    -fx-padding: 5;
 }
+
 .table-view .column-header-background {
     -fx-background-color: #2c3e50;
-    -fx-background-radius: 10 10 0 0;
+    -fx-background-radius: 20px 20px 0 0;
 }
+
 .table-view .column-header, .table-view .filler {
     -fx-background-color: transparent;
+    -fx-size: 45px;
 }
+
 .table-view .column-header .label {
     -fx-text-fill: white;
     -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #f8fafc;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #cbe0fe;
+    -fx-text-fill: black;
+}
+
+.status-label {
+    -fx-padding: 8 12;
+    -fx-background-color: #ffffffcc;
+    -fx-background-radius: 20px;
+    -fx-font-size: 12px;
 }

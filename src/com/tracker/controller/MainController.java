@@ -6,8 +6,14 @@ import com.tracker.analytics.AnalyticsService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -23,6 +29,7 @@ public class MainController {
     @FXML private TableColumn<ActivityRecord, String> colName;
     @FXML private TableColumn<ActivityRecord, Integer> colDuration;
     @FXML private TableColumn<ActivityRecord, LocalDate> colDate;
+    @FXML private Label statusLabel;
 
     private ObservableList<ActivityRecord> data = FXCollections.observableArrayList();
     private FileStorage storage = new FileStorage();
@@ -30,13 +37,10 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        // Set up table columns
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
         colDuration.setCellValueFactory(new PropertyValueFactory<>("duration"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         tableView.setItems(data);
-
-        // Load existing data from file
         loadFromFile();
     }
 
@@ -62,12 +66,13 @@ public class MainController {
 
         ActivityRecord newRecord = new ActivityRecord(name, duration, date);
         data.add(newRecord);
-        // Append to file immediately (no overwrite)
         try {
             storage.appendRecord(newRecord);
+            statusLabel.setText("✅ Added: " + name + " (" + duration + " min)");
         } catch (IOException e) {
             showAlert("File Error", "Could not save record: " + e.getMessage());
-            data.remove(newRecord); // rollback
+            data.remove(newRecord);
+            statusLabel.setText("❌ Failed to add activity");
             return;
         }
         clearInputs();
@@ -75,54 +80,56 @@ public class MainController {
 
     @FXML
     private void handleSave() {
-        // Save all current table data to file (overwrites)
         try {
             storage.saveAll(data);
+            statusLabel.setText("💾 All records saved to file.");
             showAlert("Success", "All records saved to file.");
         } catch (IOException e) {
             showAlert("Save Error", "Could not save data: " + e.getMessage());
+            statusLabel.setText("❌ Save failed");
         }
     }
 
     @FXML
     private void handleLoad() {
         loadFromFile();
+        statusLabel.setText("📂 Loaded data from file.");
+    }
+
+    @FXML
+    private void handleDelete() {
+        ActivityRecord selected = tableView.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showAlert("No Selection", "Please select an activity to delete.");
+            return;
+        }
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Delete '" + selected.getName() + "'?", ButtonType.YES, ButtonType.NO);
+        confirm.setHeaderText("Confirm deletion");
+        if (confirm.showAndWait().orElse(ButtonType.NO) == ButtonType.YES) {
+            data.remove(selected);
+            try {
+                storage.saveAll(data); // sync file after deletion
+                statusLabel.setText("🗑️ Deleted: " + selected.getName());
+            } catch (IOException e) {
+                showAlert("Error", "Could not update file after deletion.");
+                statusLabel.setText("❌ Delete failed");
+            }
+        }
     }
 
     @FXML
     private void handleAnalyze() {
-        List<ActivityRecord> records = data;
-        if (records.isEmpty()) {
+        if (data.isEmpty()) {
             showAlert("No Data", "Add some activities before analyzing.");
             return;
         }
-
-        // Compute statistics
-        Map<String, Integer> totalTime = analytics.totalTimePerActivity(records);
-        String mostFrequent = analytics.mostFrequentActivity(records);
-        Map<LocalDate, Integer> daily = analytics.dailySummary(records);
-        Map<String, Integer> weekly = analytics.weeklySummary(records);
-
-        // Build a nice analysis window
-        StringBuilder sb = new StringBuilder();
-        sb.append("📊 ACTIVITY SUMMARY\n\n");
-        sb.append("🏆 Most frequent activity: ").append(mostFrequent).append("\n\n");
-        sb.append("⏱️ Total time per activity:\n");
-        totalTime.forEach((act, mins) -> sb.append("   • ").append(act).append(": ").append(mins).append(" min\n"));
-        sb.append("\n📅 Daily summary (minutes):\n");
-        daily.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(e ->
-                sb.append("   • ").append(e.getKey()).append(" → ").append(e.getValue()).append(" min\n"));
-        sb.append("\n🗓️ Weekly summary (minutes):\n");
-        weekly.forEach((week, mins) -> sb.append("   • ").append(week).append(" → ").append(mins).append(" min\n"));
-
-        showAlert("Analytics Dashboard", sb.toString());
+        showAnalyticsDashboard();
     }
 
     private void loadFromFile() {
         List<ActivityRecord> loaded = storage.loadAll();
         data.clear();
         data.addAll(loaded);
-        showAlert("Load Complete", "Loaded " + loaded.size() + " records from file.");
     }
 
     private void clearInputs() {
@@ -137,5 +144,80 @@ public class MainController {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    // ------------------- MODERN ANALYTICS DASHBOARD -------------------
+    private void showAnalyticsDashboard() {
+        Stage analyticsStage = new Stage();
+        analyticsStage.setTitle("📊 Activity Analytics Dashboard");
+        analyticsStage.setMinWidth(750);
+        analyticsStage.setMinHeight(550);
+
+        TabPane tabPane = new TabPane();
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+
+        // Overview Tab
+        Tab overviewTab = new Tab("📈 Overview");
+        VBox overviewBox = new VBox(15);
+        overviewBox.setStyle("-fx-padding: 20; -fx-background-color: #f4f7fc;");
+
+        String mostFreq = analytics.mostFrequentActivity(data);
+        Label mostFreqLabel = new Label("🏆 Most Frequent Activity: " + mostFreq);
+        mostFreqLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+
+        Label totalActivitiesLabel = new Label("📋 Total Activities Logged: " + data.size());
+        totalActivitiesLabel.setStyle("-fx-font-size: 14px;");
+
+        // Bar chart for total time per activity
+        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Minutes");
+        BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
+        barChart.setTitle("Total Time per Activity");
+        barChart.setAnimated(true);
+        barChart.setLegendVisible(false);
+        barChart.setPrefHeight(300);
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        Map<String, Integer> totalTimeMap = analytics.totalTimePerActivity(data);
+        for (Map.Entry<String, Integer> entry : totalTimeMap.entrySet()) {
+            series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
+        }
+        barChart.getData().add(series);
+
+        overviewBox.getChildren().addAll(mostFreqLabel, totalActivitiesLabel, barChart);
+        overviewTab.setContent(overviewBox);
+
+        // Daily Summary Tab
+        Tab dailyTab = new Tab("📅 Daily Summary");
+        TableView<Map.Entry<LocalDate, Integer>> dailyTable = new TableView<>();
+        TableColumn<Map.Entry<LocalDate, Integer>, String> dateCol = new TableColumn<>("Date");
+        TableColumn<Map.Entry<LocalDate, Integer>, Integer> minsCol = new TableColumn<>("Minutes");
+        dateCol.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getKey().toString()));
+        minsCol.setCellValueFactory(cell -> new javafx.beans.property.SimpleIntegerProperty(cell.getValue().getValue()).asObject());
+        dailyTable.getColumns().addAll(dateCol, minsCol);
+        ObservableList<Map.Entry<LocalDate, Integer>> dailyItems = FXCollections.observableArrayList(analytics.dailySummary(data).entrySet());
+        dailyItems.sort((a,b) -> a.getKey().compareTo(b.getKey()));
+        dailyTable.setItems(dailyItems);
+        dailyTab.setContent(dailyTable);
+
+        // Weekly Summary Tab
+        Tab weeklyTab = new Tab("🗓️ Weekly Summary");
+        TableView<Map.Entry<String, Integer>> weeklyTable = new TableView<>();
+        TableColumn<Map.Entry<String, Integer>, String> weekCol = new TableColumn<>("Week (Mon-Sun)");
+        TableColumn<Map.Entry<String, Integer>, Integer> weekMinsCol = new TableColumn<>("Total Minutes");
+        weekCol.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getKey()));
+        weekMinsCol.setCellValueFactory(cell -> new javafx.beans.property.SimpleIntegerProperty(cell.getValue().getValue()).asObject());
+        weeklyTable.getColumns().addAll(weekCol, weekMinsCol);
+        ObservableList<Map.Entry<String, Integer>> weeklyItems = FXCollections.observableArrayList(analytics.weeklySummary(data).entrySet());
+        weeklyItems.sort((a,b) -> a.getKey().compareTo(b.getKey()));
+        weeklyTable.setItems(weeklyItems);
+        weeklyTab.setContent(weeklyTable);
+
+        tabPane.getTabs().addAll(overviewTab, dailyTab, weeklyTab);
+        Scene scene = new Scene(tabPane);
+        scene.getStylesheets().add(getClass().getResource("/com/tracker/style.css").toExternalForm());
+        analyticsStage.setScene(scene);
+        analyticsStage.show();
     }
 }

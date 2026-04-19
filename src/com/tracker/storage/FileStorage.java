@@ -20,7 +20,6 @@ public class FileStorage {
         filePath = Paths.get(DATA_DIR, FILE_NAME);
     }
 
-    // Load all records, skip corrupted lines
     public List<ActivityRecord> loadAll() {
         if (!Files.exists(filePath)) return new ArrayList<>();
         try (BufferedReader reader = Files.newBufferedReader(filePath)) {
@@ -34,7 +33,6 @@ public class FileStorage {
         }
     }
 
-    // Overwrite file with current list (used by Save button)
     public void saveAll(List<ActivityRecord> records) throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
             for (ActivityRecord rec : records) {
@@ -44,7 +42,6 @@ public class FileStorage {
         }
     }
 
-    // Append a single record (used by Add button)
     public void appendRecord(ActivityRecord record) throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(filePath, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
             writer.write(record.toCSV());
